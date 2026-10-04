@@ -9,6 +9,12 @@ Video: [Intro to Large Language Models](https://www.youtube.com/watch?v=zjkBMFhN
 
 Answers are extractive quotes with timestamps, so a citation cannot be invented. Set `OPENAI_API_KEY` if you want a paraphrased answer; the model still only sees retrieved excerpts.
 
+## Deliverable
+
+The submission is [`slides.html`](slides.html). Open that file in a browser. Arrow keys move between the nine slides: the video and why it was chosen, what Moment RAG is, the baseline, the moment pipeline, the comparison, findings, and the retrieval eval. No API key and no Fly.io deploy.
+
+The search UI is a second HTML file, [`static/index.html`](static/index.html). `make run` serves it at http://127.0.0.1:8000 with the two result columns side by side.
+
 ## Run
 
 ```bash
@@ -17,9 +23,7 @@ make index
 make run
 ```
 
-Open http://127.0.0.1:8000
-
-The submission deck is `slides.html`. Open it in a browser. Arrow keys move between slides. No API key and no Fly.io deploy.
+Open http://127.0.0.1:8000. The page is `static/index.html`. The slide deck is `slides.html`, opened directly in the browser.
 
 ```bash
 make test
