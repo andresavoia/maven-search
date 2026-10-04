@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Semantic Search vs Moment RAG</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>Semantic search, then the moment.</h1>
+      <p id="why">Loading the talk…</p>
+      <div class="meta" id="meta"></div>
+    </header>
+
+    <form id="ask-form">
+      <input id="query" type="text" name="query" placeholder="Ask something the talk actually covers" autocomplete="off" required>
+      <button type="submit">Ask both</button>
+    </form>
+    <div class="chips" id="chips"></div>
+    <p class="status" id="status"></p>
+
+    <section class="layout">
+      <aside class="player">
+        <iframe id="player" title="YouTube talk" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <p class="kicker">Click a retrieved passage to jump the player to that timestamp.</p>
+      </aside>
+      <div class="columns">
+        <article class="panel">
+          <h2>Baseline semantic RAG</h2>
+          <p class="kicker">Fixed word windows. Dense similarity only. A hit can start mid-thought.</p>
+          <div class="answer" id="baseline-answer">Ask a question to retrieve chunks.</div>
+          <div id="baseline-hits"></div>
+        </article>
+        <article class="panel">
+          <h2>Moment RAG</h2>
+          <p class="kicker">Topic-bounded moments. Passage scores pool up to the moment, then fuse with BM25.</p>
+          <div class="answer" id="moment-answer">Ask a question to retrieve moments.</div>
+          <div id="moment-hits"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel cross">
+      <h2>Cross-source</h2>
+      <p class="kicker">The same question over the talk, a paper, and a slide deck. A citation is a timestamp, a page, or a slide that was actually retrieved.</p>
+      <div class="answer" id="cross-answer">Ask a question to retrieve across sources.</div>
+      <div id="cross-hits"></div>
+    </section>
+
+    <section class="findings">
+      <h2>What changes</h2>
+      <p>
+        Fixed chunks optimize for a uniform vector length. They cut whenever the word budget runs out,
+        so the retrieved context is often a slice of two topics or the middle of one idea.
+        Moment RAG first finds where the talk changes subject, keeps that span together, and retrieves
+        the whole moment. Citations are a start and end time of a coherent stretch, not an arbitrary window.
+      </p>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

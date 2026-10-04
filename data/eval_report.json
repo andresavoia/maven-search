@@ -1,0 +1,218 @@
+{
+  "rows": [
+    {
+      "id": "definition",
+      "query": "What is a large language model?",
+      "evidence": "0:26 caption: 'language model is just two files'",
+      "gold": [
+        [
+          20,
+          210
+        ]
+      ],
+      "baseline": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 21.88,
+          "end": 64.199,
+          "title": null
+        }
+      },
+      "moment": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 0.16,
+          "end": 108.52,
+          "title": "hi everyone so recently I gave a 30-minute talk on large language models just"
+        }
+      }
+    },
+    {
+      "id": "hallucination",
+      "query": "What does he mean by hallucination?",
+      "evidence": "10:04 caption: 'like hallucinated'; 11:06 'hallucination'",
+      "gold": [
+        [
+          600,
+          750
+        ]
+      ],
+      "baseline": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 651.24,
+          "end": 681.399,
+          "title": null
+        }
+      },
+      "moment": {
+        "hit_at_1": false,
+        "hit_at_4": true,
+        "mrr": 0.5,
+        "rank": 2,
+        "top": {
+          "start": 2537.359,
+          "end": 2670.92,
+          "title": "coordinating a lot of resources be they memory or computational tools for problem solving"
+        }
+      }
+    },
+    {
+      "id": "rlhf",
+      "query": "How does RLHF work after pretraining?",
+      "evidence": "22:10 caption: 'reinforcement learning from Human'",
+      "gold": [
+        [
+          1260,
+          1440
+        ]
+      ],
+      "baseline": {
+        "hit_at_1": false,
+        "hit_at_4": false,
+        "mrr": 0.0,
+        "rank": null,
+        "top": {
+          "start": 1027.48,
+          "end": 1064.3200000000002,
+          "title": null
+        }
+      },
+      "moment": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 1255.52,
+          "end": 1418.36,
+          "title": "you what this looks like the reason that we do this is that in"
+        }
+      }
+    },
+    {
+      "id": "scaling",
+      "query": "What are scaling laws?",
+      "evidence": "25:47 caption: 'call scaling laws'",
+      "gold": [
+        [
+          1530,
+          1710
+        ]
+      ],
+      "baseline": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 1656.919,
+          "end": 1693.0,
+          "title": null
+        }
+      },
+      "moment": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 1499.2,
+          "end": 1659.159,
+          "title": "of uh Chase uh the propriety AR uh ecosystems and that's roughly the dynamic"
+        }
+      }
+    },
+    {
+      "id": "os",
+      "query": "How is an LLM like an operating system?",
+      "evidence": "42:33 caption: 'kernel process'; 43:37 'operating system'",
+      "gold": [
+        [
+          2540,
+          2760
+        ]
+      ],
+      "baseline": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 2601.16,
+          "end": 2638.04,
+          "title": null
+        }
+      },
+      "moment": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 2537.359,
+          "end": 2670.92,
+          "title": "coordinating a lot of resources be they memory or computational tools for problem solving"
+        }
+      }
+    },
+    {
+      "id": "attacks",
+      "query": "What are jailbreaks and prompt injection?",
+      "evidence": "46:16 caption: 'jailbreak attacks'; 53:13 'prompt injection attack'",
+      "gold": [
+        [
+          2776,
+          3120
+        ],
+        [
+          3193,
+          3540
+        ]
+      ],
+      "baseline": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 3000.72,
+          "end": 3037.68,
+          "title": null
+        }
+      },
+      "moment": {
+        "hit_at_1": true,
+        "hit_at_4": true,
+        "mrr": 1.0,
+        "rank": 1,
+        "top": {
+          "start": 2943.319,
+          "end": 3102.68,
+          "title": "give this to CH PT is going to refuse and that is correct but"
+        }
+      }
+    }
+  ],
+  "baseline": {
+    "hit_at_1": 0.8333333333333334,
+    "hit_at_4": 0.8333333333333334,
+    "mrr": 0.8333333333333334,
+    "n": 6
+  },
+  "moment": {
+    "hit_at_1": 0.8333333333333334,
+    "hit_at_4": 1.0,
+    "mrr": 0.9166666666666666,
+    "n": 6
+  }
+}

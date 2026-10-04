@@ -1,0 +1,234 @@
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assignment 3 — Semantic Search vs Moment RAG</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10140f;
+      --panel: #1a2118;
+      --line: #2c3828;
+      --text: #e7f0df;
+      --muted: #9aab92;
+      --accent: #d6ff4a;
+      --accent-2: #7dcea0;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: #070a06; color: var(--text); font-family: "Iowan Old Style", Palatino, Georgia, serif; }
+    body { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    #stage { width: 1280px; height: 720px; position: relative; transform-origin: center center; flex-shrink: 0; }
+    .slide { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 48px 56px 64px; background: radial-gradient(900px 420px at 0% -10%, #24321c 0%, transparent 55%), var(--bg); opacity: 0; pointer-events: none; }
+    .slide.active { opacity: 1; pointer-events: auto; }
+    .kicker { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-2); margin: 0 0 14px; }
+    h1 { font-size: 58px; line-height: 0.95; letter-spacing: -0.03em; margin: 0 0 16px; font-weight: 600; }
+    h2 { font-size: 36px; line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 22px; font-weight: 600; }
+    p, li { font-size: 22px; line-height: 1.35; }
+    .sub { color: var(--muted); max-width: 46rem; font-size: 24px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .row.three { grid-template-columns: 1fr 1fr 1fr; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+    .card h3 { margin: 0 0 8px; font-size: 18px; color: var(--accent); font-family: ui-sans-serif, system-ui, sans-serif; }
+    .card p, .card li { font-size: 18px; margin: 0; color: var(--text); }
+    ul { margin: 0; padding-left: 1.1rem; }
+    li + li { margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 18px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--accent-2); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .stat { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 28px; color: var(--accent); }
+    .foot { margin-top: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--muted); }
+    #nav { position: fixed; bottom: 18px; left: 0; right: 0; display: flex; justify-content: center; gap: 16px; align-items: center; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+    button { background: transparent; color: var(--accent); border: 1px solid #445536; border-radius: 999px; padding: 8px 14px; font: inherit; cursor: pointer; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  </style>
+</head>
+<body>
+  <main id="stage">
+    <section class="slide active">
+      <p class="kicker">Assignment 3</p>
+      <h1>Semantic search,<br>then the moment.</h1>
+      <p class="sub">Two retrieval pipelines over one YouTube transcript. Fixed chunks against topic-bounded moments. Answers are quotes from what was retrieved.</p>
+      <p class="foot">No OpenAI key. No Fly.io. Local embeddings. Arrow keys to move.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">01 — Video</p>
+      <h2>Why this talk</h2>
+      <div class="row">
+        <div class="card">
+          <h3>Selected video</h3>
+          <p><strong>Intro to Large Language Models</strong><br>Andrej Karpathy · 59.8 min<br><code>youtube.com/watch?v=zjkBMFhNj_g</code></p>
+        </div>
+        <div class="card">
+          <h3>Why it fits</h3>
+          <ul>
+            <li>English captions, 1,704 cue lines.</li>
+            <li>The subject changes in long stretches: what an LLM is, pretraining, RLHF, jailbreaks, the LLM operating system.</li>
+            <li>Those shifts are natural moments, so a fixed window and a moment boundary disagree in a way you can see.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="foot">Transcript cached in data/transcript.json via youtube-transcript-api.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">02 — Reference architecture</p>
+      <h2>What Moment RAG is</h2>
+      <div class="card" style="margin-bottom: 16px;">
+        <p>The course Moment RAG does not retrieve a document. It retrieves a <strong>moment</strong>: a contiguous stretch of a talk, with a start and an end. The citation jumps the player to that timestamp. The reference pipeline is self-query, decompose, hybrid retrieve (dense + BM25 + HyDE), cross-encoder rerank, then a cited answer.</p>
+      </div>
+      <div class="row three">
+        <div class="card"><h3>Unit</h3><p>A moment, not a token window.</p></div>
+        <div class="card"><h3>Locator</h3><p>A real timestamp from retrieval. The model does not invent one.</p></div>
+        <div class="card"><h3>This build</h3><p>Same idea, smaller stack: topic cuts, dense + BM25, quoted answer.</p></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">03 — Part 1</p>
+      <h2>Baseline semantic RAG</h2>
+      <div class="row" style="margin-bottom: 16px;">
+        <div class="card"><p class="stat">143</p><p>chunks</p></div>
+        <div class="card"><p class="stat">110</p><p>words per chunk, 25 overlap</p></div>
+        <div class="card" style="grid-column: span 1;"><p class="stat">384</p><p>MiniLM dimensions, local</p></div>
+      </div>
+      <div class="card">
+        <p>Transcript → fixed word windows → embed each window → cosine search → quote the best sentences inside the hit.</p>
+        <p style="margin-top: 10px; color: var(--muted);">The cut ignores the subject. A window can start in finetuning and end before RLHF, or split one idea in half. Dense similarity only. No BM25 on this path.</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">04 — Part 2</p>
+      <h2>Moment RAG</h2>
+      <div class="row" style="margin-bottom: 16px;">
+        <div class="card"><p class="stat">36</p><p>moments</p></div>
+        <div class="card"><p class="stat">~28s</p><p>beats, then topic cuts</p></div>
+        <div class="card"><p class="stat">50–180s</p><p>moment length after merge and split</p></div>
+      </div>
+      <div class="card">
+        <ul>
+          <li>Pack cues into beats. Embed each beat. Cut where neighboring beats stop matching.</li>
+          <li>Score a moment by its best inner beat plus a BM25 score on the full moment text.</li>
+          <li>Keep one previous beat of overlap so the thesis sentence is not left on the wrong side of the cut.</li>
+          <li>The answer quotes that moment and cites its start and end.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">05 — Comparison</p>
+      <h2>Same question, different span</h2>
+      <p style="margin-top: 0;">Query: <em>How does RLHF work after pretraining?</em></p>
+      <table>
+        <thead><tr><th></th><th>Where it lands</th><th>What you hear</th></tr></thead>
+        <tbody>
+          <tr><td>Baseline</td><td>17:07–17:44</td><td>Still in finetuning. RLHF has not started.</td></tr>
+          <tr><td>Moment RAG</td><td>20:55–23:38</td><td>Comparison labels, then reinforcement learning from human feedback.</td></tr>
+        </tbody>
+      </table>
+      <div class="row" style="margin-top: 16px;">
+        <div class="card"><h3>Jailbreaks</h3><p>Both find the suffix attack near 50:00. The moment keeps the wider explanation.</p></div>
+        <div class="card"><h3>LLM as an OS</h3><p>The moment starts at 42:17, on “not a chatbot, a kernel.” The chunk starts later, inside the diagram.</p></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">06 — Side by side</p>
+      <h2>What actually changes</h2>
+      <table>
+        <thead><tr><th></th><th>Baseline</th><th>Moment RAG</th></tr></thead>
+        <tbody>
+          <tr><td>Chunking</td><td>Word budget</td><td>Topic boundary</td></tr>
+          <tr><td>Retrieval</td><td>Dense only</td><td>Dense passage pooled to the moment, fused with BM25</td></tr>
+          <tr><td>Context</td><td>A slice that can split a thought</td><td>The whole stretch of that subject</td></tr>
+          <tr><td>Citation</td><td>A short window</td><td>Start and end of the moment</td></tr>
+          <tr><td>Answer</td><td>Quote from the hit</td><td>Quote from the hit</td></tr>
+        </tbody>
+      </table>
+      <p class="foot">Both answers are grounded. Moment RAG changes which span is retrieved, not the rule that the quote must come from that span.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">07 — Findings</p>
+      <h2>Limits and next steps</h2>
+      <div class="row">
+        <div class="card">
+          <h3>Findings</h3>
+          <ul>
+            <li>Fixed chunks miss a stage that starts a few minutes later. RLHF is the clear case.</li>
+            <li>When the answer is one sentence in the opening, the chunk is tighter and the moment drags in the setup.</li>
+            <li>A citation is checkable: the player jumps to the timestamp.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Limits</h3>
+          <ul>
+            <li>Auto captions. Moment titles are spoken fragments.</li>
+            <li>A long moment dilutes one embedding.</li>
+            <li>No cross-encoder. No HyDE.</li>
+            <li>Without an API key the answer is a quote, not a paraphrase. That is enough, and it cannot invent a time.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="foot">Next: a cross-encoder reranker, then an optional paraphrase that still may cite only retrieved times. Fly.io is not part of this submission.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">08 — Eval</p>
+      <h2>Hit rate against the captions</h2>
+      <p style="margin-top: 0;">Six questions. A hit is a retrieved span that overlaps the caption time where the phrase is spoken. No language model judges the answer.</p>
+      <table>
+        <thead><tr><th>System</th><th>Hit@1</th><th>Hit@4</th><th>MRR</th></tr></thead>
+        <tbody>
+          <tr><td>Baseline</td><td>0.83</td><td>0.83</td><td>0.83</td></tr>
+          <tr><td>Moment RAG</td><td>0.83</td><td>1.00</td><td>0.92</td></tr>
+        </tbody>
+      </table>
+      <p class="foot">The gap is RLHF: baseline misses 22:10 even in the top 4 (it stops at 17:07). Moment RAG hits it at rank 1. Hallucination is the other way: the moment’s top hit is the OS stretch, and the right span is rank 2. Run <code>make eval</code>.</p>
+    </section>
+
+    <section class="slide">
+      <p class="kicker">09 — Run it</p>
+      <h2>What to demo</h2>
+      <div class="card" style="margin-bottom: 16px;">
+        <p><code>make setup && make index && make run</code><br>Open <code>http://127.0.0.1:8000</code> and click “How does RLHF work after pretraining?”</p>
+      </div>
+      <div class="row">
+        <div class="card"><h3>Left column</h3><p>Baseline. Fixed windows. Lands at 17:07.</p></div>
+        <div class="card"><h3>Right column</h3><p>Moment RAG. Lands at 20:55. Click the hit to seek the player.</p></div>
+      </div>
+      <p class="foot"><code>make eval</code> writes <code>data/eval_report.md</code>. Embeddings: sentence-transformers/all-MiniLM-L6-v2. OPENAI_API_KEY is optional and unused.</p>
+    </section>
+  </main>
+  <div id="nav">
+    <button type="button" id="prev">Prev</button>
+    <span id="count">1 / 9</span>
+    <button type="button" id="next">Next</button>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll(".slide")];
+    const stage = document.querySelector("#stage");
+    let index = 0;
+    function fit() {
+      const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+      stage.style.transform = `scale(${scale})`;
+    }
+    function show(next) {
+      index = Math.max(0, Math.min(slides.length - 1, next));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      document.querySelector("#count").textContent = `${index + 1} / ${slides.length}`;
+    }
+    document.querySelector("#prev").addEventListener("click", () => show(index - 1));
+    document.querySelector("#next").addEventListener("click", () => show(index + 1));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") show(index + 1);
+      if (event.key === "ArrowLeft" || event.key === "ArrowUp") show(index - 1);
+    });
+    window.addEventListener("resize", fit);
+    fit();
+    show(0);
+  </script>
+</body>
+</html>

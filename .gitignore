@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.env
+data/index/
+data/corpus/
+data/inbox/
+data/sources.json
+*.npy
+.DS_Store
